@@ -29,17 +29,61 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button1 = new System.Windows.Forms.Button();
-            this.btnSelectDestination = new System.Windows.Forms.Button();
-            this.txbFolderSource = new System.Windows.Forms.TextBox();
-            this.txbFolderDestination = new System.Windows.Forms.TextBox();
-            this.lblFolderSource = new System.Windows.Forms.Label();
-            this.lblFolderDestination = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnIfz2Img = new System.Windows.Forms.Button();
             this.btnImg2Ifz = new System.Windows.Forms.Button();
             this.pnlSelectFolders = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.lblFolderDestination = new System.Windows.Forms.Label();
+            this.btnSelectDestination = new System.Windows.Forms.Button();
+            this.lblFolderSource = new System.Windows.Forms.Label();
+            this.txbFolderDestination = new System.Windows.Forms.TextBox();
+            this.txbFolderSource = new System.Windows.Forms.TextBox();
+            this.pnlImg2Ifz = new System.Windows.Forms.Panel();
+            this.cmbSelectExt = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btnBack = new System.Windows.Forms.Button();
+            this.lblPathSource = new System.Windows.Forms.Label();
+            this.txbFolderPath = new System.Windows.Forms.TextBox();
+            this.txbImgsCount = new System.Windows.Forms.TextBox();
+            this.btnRefreshImgCount = new System.Windows.Forms.Button();
+            this.btnConvert = new System.Windows.Forms.Button();
             this.pnlSelectFolders.SuspendLayout();
+            this.pnlImg2Ifz.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // btnIfz2Img
+            // 
+            this.btnIfz2Img.Location = new System.Drawing.Point(103, 240);
+            this.btnIfz2Img.Name = "btnIfz2Img";
+            this.btnIfz2Img.Size = new System.Drawing.Size(138, 51);
+            this.btnIfz2Img.TabIndex = 6;
+            this.btnIfz2Img.Text = "IFZ ---> IMG";
+            this.btnIfz2Img.UseVisualStyleBackColor = true;
+            // 
+            // btnImg2Ifz
+            // 
+            this.btnImg2Ifz.Location = new System.Drawing.Point(410, 240);
+            this.btnImg2Ifz.Name = "btnImg2Ifz";
+            this.btnImg2Ifz.Size = new System.Drawing.Size(138, 51);
+            this.btnImg2Ifz.TabIndex = 7;
+            this.btnImg2Ifz.Text = "IMG ---> IFZ";
+            this.btnImg2Ifz.UseVisualStyleBackColor = true;
+            this.btnImg2Ifz.Click += new System.EventHandler(this.btnImg2Ifz_Click);
+            // 
+            // pnlSelectFolders
+            // 
+            this.pnlSelectFolders.Controls.Add(this.txbFolderSource);
+            this.pnlSelectFolders.Controls.Add(this.btnIfz2Img);
+            this.pnlSelectFolders.Controls.Add(this.btnImg2Ifz);
+            this.pnlSelectFolders.Controls.Add(this.txbFolderDestination);
+            this.pnlSelectFolders.Controls.Add(this.lblFolderSource);
+            this.pnlSelectFolders.Controls.Add(this.btnSelectDestination);
+            this.pnlSelectFolders.Controls.Add(this.lblFolderDestination);
+            this.pnlSelectFolders.Controls.Add(this.button1);
+            this.pnlSelectFolders.Location = new System.Drawing.Point(12, 12);
+            this.pnlSelectFolders.Name = "pnlSelectFolders";
+            this.pnlSelectFolders.Size = new System.Drawing.Size(680, 397);
+            this.pnlSelectFolders.TabIndex = 8;
             // 
             // button1
             // 
@@ -51,6 +95,14 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // lblFolderDestination
+            // 
+            this.lblFolderDestination.Location = new System.Drawing.Point(24, 141);
+            this.lblFolderDestination.Name = "lblFolderDestination";
+            this.lblFolderDestination.Size = new System.Drawing.Size(217, 23);
+            this.lblFolderDestination.TabIndex = 5;
+            this.lblFolderDestination.Text = "Select destination folder:";
+            // 
             // btnSelectDestination
             // 
             this.btnSelectDestination.Location = new System.Drawing.Point(440, 151);
@@ -61,20 +113,6 @@
             this.btnSelectDestination.UseVisualStyleBackColor = true;
             this.btnSelectDestination.Click += new System.EventHandler(this.btnSelectDestination_Click);
             // 
-            // txbFolderSource
-            // 
-            this.txbFolderSource.Location = new System.Drawing.Point(24, 48);
-            this.txbFolderSource.Name = "txbFolderSource";
-            this.txbFolderSource.Size = new System.Drawing.Size(410, 20);
-            this.txbFolderSource.TabIndex = 2;
-            // 
-            // txbFolderDestination
-            // 
-            this.txbFolderDestination.Location = new System.Drawing.Point(24, 167);
-            this.txbFolderDestination.Name = "txbFolderDestination";
-            this.txbFolderDestination.Size = new System.Drawing.Size(410, 20);
-            this.txbFolderDestination.TabIndex = 3;
-            // 
             // lblFolderSource
             // 
             this.lblFolderSource.Location = new System.Drawing.Point(24, 16);
@@ -83,54 +121,119 @@
             this.lblFolderSource.TabIndex = 4;
             this.lblFolderSource.Text = "Select your image folder.";
             // 
-            // lblFolderDestination
+            // txbFolderDestination
             // 
-            this.lblFolderDestination.Location = new System.Drawing.Point(24, 141);
-            this.lblFolderDestination.Name = "lblFolderDestination";
-            this.lblFolderDestination.Size = new System.Drawing.Size(217, 23);
-            this.lblFolderDestination.TabIndex = 5;
-            this.lblFolderDestination.Text = "Select destination folder:";
+            this.txbFolderDestination.Location = new System.Drawing.Point(24, 167);
+            this.txbFolderDestination.Name = "txbFolderDestination";
+            this.txbFolderDestination.Size = new System.Drawing.Size(410, 20);
+            this.txbFolderDestination.TabIndex = 3;
             // 
-            // button2
+            // txbFolderSource
             // 
-            this.button2.Location = new System.Drawing.Point(116, 321);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(138, 51);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "IFZ ---> IMG";
-            this.button2.UseVisualStyleBackColor = true;
+            this.txbFolderSource.Location = new System.Drawing.Point(24, 48);
+            this.txbFolderSource.Name = "txbFolderSource";
+            this.txbFolderSource.Size = new System.Drawing.Size(410, 20);
+            this.txbFolderSource.TabIndex = 2;
             // 
-            // btnImg2Ifz
+            // pnlImg2Ifz
             // 
-            this.btnImg2Ifz.Location = new System.Drawing.Point(380, 321);
-            this.btnImg2Ifz.Name = "btnImg2Ifz";
-            this.btnImg2Ifz.Size = new System.Drawing.Size(138, 51);
-            this.btnImg2Ifz.TabIndex = 7;
-            this.btnImg2Ifz.Text = "IMG ---> IFZ";
-            this.btnImg2Ifz.UseVisualStyleBackColor = true;
-            this.btnImg2Ifz.Click += new System.EventHandler(this.btnImg2Ifz_Click);
+            this.pnlImg2Ifz.Controls.Add(this.btnConvert);
+            this.pnlImg2Ifz.Controls.Add(this.btnRefreshImgCount);
+            this.pnlImg2Ifz.Controls.Add(this.txbImgsCount);
+            this.pnlImg2Ifz.Controls.Add(this.txbFolderPath);
+            this.pnlImg2Ifz.Controls.Add(this.lblPathSource);
+            this.pnlImg2Ifz.Controls.Add(this.btnBack);
+            this.pnlImg2Ifz.Controls.Add(this.label1);
+            this.pnlImg2Ifz.Controls.Add(this.cmbSelectExt);
+            this.pnlImg2Ifz.Location = new System.Drawing.Point(12, 12);
+            this.pnlImg2Ifz.Name = "pnlImg2Ifz";
+            this.pnlImg2Ifz.Size = new System.Drawing.Size(680, 397);
+            this.pnlImg2Ifz.TabIndex = 8;
             // 
-            // pnlSelectFolders
+            // cmbSelectExt
             // 
-            this.pnlSelectFolders.Controls.Add(this.txbFolderSource);
-            this.pnlSelectFolders.Controls.Add(this.txbFolderDestination);
-            this.pnlSelectFolders.Controls.Add(this.lblFolderSource);
-            this.pnlSelectFolders.Controls.Add(this.btnSelectDestination);
-            this.pnlSelectFolders.Controls.Add(this.lblFolderDestination);
-            this.pnlSelectFolders.Controls.Add(this.button1);
-            this.pnlSelectFolders.Location = new System.Drawing.Point(9, 65);
-            this.pnlSelectFolders.Name = "pnlSelectFolders";
-            this.pnlSelectFolders.Size = new System.Drawing.Size(590, 216);
-            this.pnlSelectFolders.TabIndex = 8;
+            this.cmbSelectExt.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSelectExt.FormattingEnabled = true;
+            this.cmbSelectExt.Items.AddRange(new object[] {
+            ".bmp",
+            ".jpg / .jpeg",
+            ".png"});
+            this.cmbSelectExt.Location = new System.Drawing.Point(168, 82);
+            this.cmbSelectExt.Name = "cmbSelectExt";
+            this.cmbSelectExt.Size = new System.Drawing.Size(174, 21);
+            this.cmbSelectExt.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(27, 80);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(135, 23);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Format:";
+            // 
+            // btnBack
+            // 
+            this.btnBack.Location = new System.Drawing.Point(24, 325);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(138, 51);
+            this.btnBack.TabIndex = 7;
+            this.btnBack.Text = "<<< Back";
+            this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
+            // 
+            // lblPathSource
+            // 
+            this.lblPathSource.Location = new System.Drawing.Point(27, 45);
+            this.lblPathSource.Name = "lblPathSource";
+            this.lblPathSource.Size = new System.Drawing.Size(135, 23);
+            this.lblPathSource.TabIndex = 8;
+            this.lblPathSource.Text = "Folder path:";
+            // 
+            // txbFolderPath
+            // 
+            this.txbFolderPath.Location = new System.Drawing.Point(169, 47);
+            this.txbFolderPath.Name = "txbFolderPath";
+            this.txbFolderPath.ReadOnly = true;
+            this.txbFolderPath.Size = new System.Drawing.Size(422, 20);
+            this.txbFolderPath.TabIndex = 9;
+            // 
+            // txbImgsCount
+            // 
+            this.txbImgsCount.Location = new System.Drawing.Point(453, 80);
+            this.txbImgsCount.Multiline = true;
+            this.txbImgsCount.Name = "txbImgsCount";
+            this.txbImgsCount.ReadOnly = true;
+            this.txbImgsCount.Size = new System.Drawing.Size(138, 84);
+            this.txbImgsCount.TabIndex = 10;
+            this.txbImgsCount.Text = ".bmp: 0\r\n.jpg: 0\r\n.png: 0\r\n.ifz: 0";
+            // 
+            // btnRefreshImgCount
+            // 
+            this.btnRefreshImgCount.Location = new System.Drawing.Point(453, 167);
+            this.btnRefreshImgCount.Name = "btnRefreshImgCount";
+            this.btnRefreshImgCount.Size = new System.Drawing.Size(138, 51);
+            this.btnRefreshImgCount.TabIndex = 11;
+            this.btnRefreshImgCount.Text = "Refresh";
+            this.btnRefreshImgCount.UseVisualStyleBackColor = true;
+            this.btnRefreshImgCount.Click += new System.EventHandler(this.btnRefreshImgCount_Click);
+            // 
+            // btnConvert
+            // 
+            this.btnConvert.Location = new System.Drawing.Point(453, 325);
+            this.btnConvert.Name = "btnConvert";
+            this.btnConvert.Size = new System.Drawing.Size(138, 51);
+            this.btnConvert.TabIndex = 12;
+            this.btnConvert.Text = "Convert";
+            this.btnConvert.UseVisualStyleBackColor = true;
+            this.btnConvert.Click += new System.EventHandler(this.btnConvert_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(704, 421);
+            this.Controls.Add(this.pnlImg2Ifz);
             this.Controls.Add(this.pnlSelectFolders);
-            this.Controls.Add(this.btnImg2Ifz);
-            this.Controls.Add(this.button2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Location = new System.Drawing.Point(100, 100);
             this.Name = "Form1";
@@ -138,21 +241,31 @@
             this.Text = "IFZConvertor";
             this.pnlSelectFolders.ResumeLayout(false);
             this.pnlSelectFolders.PerformLayout();
+            this.pnlImg2Ifz.ResumeLayout(false);
+            this.pnlImg2Ifz.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button btnSelectDestination;
+        private System.Windows.Forms.Button btnIfz2Img;
+        private System.Windows.Forms.Button btnImg2Ifz;
+        private System.Windows.Forms.Panel pnlSelectFolders;
         private System.Windows.Forms.TextBox txbFolderSource;
         private System.Windows.Forms.TextBox txbFolderDestination;
         private System.Windows.Forms.Label lblFolderSource;
+        private System.Windows.Forms.Button btnSelectDestination;
         private System.Windows.Forms.Label lblFolderDestination;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button btnImg2Ifz;
-        private System.Windows.Forms.Panel pnlSelectFolders;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Panel pnlImg2Ifz;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cmbSelectExt;
+        private System.Windows.Forms.Button btnBack;
+        private System.Windows.Forms.Label lblPathSource;
+        private System.Windows.Forms.TextBox txbFolderPath;
+        private System.Windows.Forms.TextBox txbImgsCount;
+        private System.Windows.Forms.Button btnRefreshImgCount;
+        private System.Windows.Forms.Button btnConvert;
     }
 }
 

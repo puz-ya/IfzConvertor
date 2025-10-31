@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
@@ -50,6 +52,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="bmp2ifz\cameraimage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="bmp2ifz\LanguageMode.cs" />
+    <Compile Include="bmp2ifz\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="bmp2ifz\MultiLanguage.cs" />
+    <Compile Include="bmp2ifz\Setting.cs" />
+    <Compile Include="bmp2ifz\Version.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="folderDialog\FolderSelectDialog.cs" />
     <Compile Include="folderDialog\Reflector.cs" />
     <Compile Include="Form2.cs">
