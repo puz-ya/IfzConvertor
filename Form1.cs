@@ -26,11 +26,19 @@ namespace IFZConvertor
             cmbSelectExt.SelectedIndex = 0; //select .bmp as Default extension
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnSelectSource_Click(object sender, EventArgs e)
         {
             var fsd = new FolderSelectDialog();
-            fsd.Title = "What to select";
-            fsd.InitialDirectory = @"c:\";
+            fsd.Title = "Select folder with image files.";
+
+            if (txbFolderSource.Text.Length > 0 && Directory.Exists(txbFolderSource.Text))
+            {
+                fsd.InitialDirectory = txbFolderSource.Text;
+            }
+            else{
+                fsd.InitialDirectory = @"c:\";
+            }
+
             if (fsd.ShowDialog(IntPtr.Zero))
             {
                 Console.WriteLine(fsd.FileName);
@@ -42,7 +50,16 @@ namespace IFZConvertor
         {
             var fsd = new FolderSelectDialog();
             fsd.Title = "What to select";
-            fsd.InitialDirectory = @"c:\";
+
+            if (txbFolderDestination.Text.Length > 0 && Directory.Exists(txbFolderDestination.Text))
+            {
+                fsd.InitialDirectory = txbFolderDestination.Text;
+            }
+            else
+            {
+                fsd.InitialDirectory = @"c:\";
+            }
+
             if (fsd.ShowDialog(IntPtr.Zero))
             {
                 Console.WriteLine(fsd.FileName);
@@ -52,8 +69,25 @@ namespace IFZConvertor
 
         private void btnImg2Ifz_Click(object sender, EventArgs e)
         {
-            //(new Form2()).Show();
-            //this.Close();
+
+            if (Directory.Exists(txbFolderSource.Text))
+            {
+                if (Directory.Exists(txbFolderDestination.Text))
+                {
+                    //ok
+                }
+                else
+                {
+                    txbFolderDestination.Text = txbFolderSource.Text; // It will be the same folder.
+                }
+            }
+            else
+            {
+                // No source dir -
+                MessageBox.Show("Error: Source path not found! Please, check specified path.");
+                return;
+            }
+
             pnlSelectFolders.SendToBack();
             pnlSelectFolders.Visible = false;
 
@@ -74,6 +108,8 @@ namespace IFZConvertor
             pnlImg2Ifz.SendToBack();
             pnlImg2Ifz.Visible = false;
         }
+
+
 
         private void CountImagesInFolder()
         {
@@ -166,7 +202,7 @@ namespace IFZConvertor
             filename = filename.ToLower();
             if (filename.IndexOf(".bmp") < 1)
             {
-                return true;
+                return false;
             }
             string fn = filename.Replace(".bmp", ".ifz");
             using (new SaveFileDialog())
@@ -314,6 +350,31 @@ namespace IFZConvertor
         }
         //*/
 
+
+        public static void ConvertPngToBmp(string sourceFilePath, string destinationFilePath)
+        {
+            try
+            {
+                // Ensure the source file exists
+                if (!File.Exists(sourceFilePath))
+                {
+                    throw new FileNotFoundException("Source file not found.", sourceFilePath);
+                }
+
+                // Load the .png file
+                using (Bitmap pngImage = new Bitmap(sourceFilePath))
+                {
+                    // Save the image as .bmp
+                    pngImage.Save(destinationFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
+                }
+
+                Console.WriteLine($"Successfully converted {sourceFilePath} to {destinationFilePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
 
         /// <summary>
         /// Write one image data as IFZ file to Camera0 slot
@@ -521,6 +582,11 @@ namespace IFZConvertor
                         break;
                     }
             }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
