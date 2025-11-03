@@ -1,15 +1,10 @@
 ﻿using FolderSelect;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace IFZConvertor
@@ -20,14 +15,43 @@ namespace IFZConvertor
         {
             InitializeComponent();
 
-            pnlImg2Ifz.SendToBack();
-            pnlImg2Ifz.Visible = false;
+            SetAllControlsToDefault();
+        }
 
-            cmbSelectExt.SelectedIndex = 0; //select .bmp as Default extension
+        #region "UI Controls and Events"
+
+        /// <summary>
+        /// When user selects checkbox "Destination same as Source", disable destination path selection.
+        /// Copy source path to destination path.
+        /// </summary>
+        private void CheckDestinationPathSameAsSource() { 
+            
+            if(chbSameAsSourceFolder.Checked)
+            {
+                txbFolderDestination.Enabled = false;
+                btnSelectDestination.Enabled = false;
+                txbFolderDestination.Text = txbFolderSource.Text;
+            }
+            else
+            {
+                txbFolderDestination.Enabled = true;
+                btnSelectDestination.Enabled = true;
+            }
+
         }
 
         private void btnSelectSource_Click(object sender, EventArgs e)
         {
+            SelectSourceFolder();
+            CountImagesInFolder();
+        }
+
+        /// <summary>
+        /// Open FileDialog (Vista style) to select Source folder with images.
+        /// We are getting only folder paths, not files.
+        /// </summary>
+        private void SelectSourceFolder() {
+
             var fsd = new FolderSelectDialog();
             fsd.Title = "Select folder with image files.";
 
@@ -35,19 +59,34 @@ namespace IFZConvertor
             {
                 fsd.InitialDirectory = txbFolderSource.Text;
             }
-            else{
-                fsd.InitialDirectory = @"c:\";
+            else
+            {
+                // Get the path to the user's Documents folder
+                fsd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             }
 
             if (fsd.ShowDialog(IntPtr.Zero))
             {
-                Console.WriteLine(fsd.FileName);
+                //Console.WriteLine(fsd.FileName);
                 txbFolderSource.Text = fsd.FileName;
+                CheckDestinationPathSameAsSource();
             }
         }
 
         private void btnSelectDestination_Click(object sender, EventArgs e)
         {
+            SelectDestinationFolder();
+        }
+
+        private void SelectDestinationFolder(){
+
+            if (chbSameAsSourceFolder.Checked)
+            {
+                MessageBox.Show("Destination folder is checked the same as Source folder!","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txbFolderDestination.Text = txbFolderSource.Text;
+                return;
+            }
+
             var fsd = new FolderSelectDialog();
             fsd.Title = "What to select";
 
@@ -57,12 +96,13 @@ namespace IFZConvertor
             }
             else
             {
-                fsd.InitialDirectory = @"c:\";
+                // Get the path to the user's Documents folder
+                fsd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             }
 
             if (fsd.ShowDialog(IntPtr.Zero))
             {
-                Console.WriteLine(fsd.FileName);
+                //Console.WriteLine(fsd.FileName);
                 txbFolderDestination.Text = fsd.FileName;
             }
         }
@@ -70,46 +110,27 @@ namespace IFZConvertor
         private void btnImg2Ifz_Click(object sender, EventArgs e)
         {
 
-            if (Directory.Exists(txbFolderSource.Text))
-            {
-                if (Directory.Exists(txbFolderDestination.Text))
-                {
-                    //ok
-                }
-                else
-                {
-                    txbFolderDestination.Text = txbFolderSource.Text; // It will be the same folder.
-                }
-            }
-            else
-            {
-                // No source dir -
-                MessageBox.Show("Error: Source path not found! Please, check specified path.");
-                return;
-            }
+            SelectImg2IfzMode();
 
-            pnlSelectFolders.SendToBack();
-            pnlSelectFolders.Visible = false;
+        }
+
+        private void SelectImg2IfzMode()
+        {
+            pnlSelectMainMode.SendToBack();
+            pnlSelectMainMode.Visible = false;
 
             pnlImg2Ifz.BringToFront();
             pnlImg2Ifz.Visible = true;
-
-            // call for counting files in the provided source folder
-            CountImagesInFolder();
-
-            txbFolderPath.Text = txbFolderSource.Text;
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            pnlSelectFolders.BringToFront();
-            pnlSelectFolders.Visible = true;
+            pnlSelectMainMode.BringToFront();
+            pnlSelectMainMode.Visible = true;
 
             pnlImg2Ifz.SendToBack();
             pnlImg2Ifz.Visible = false;
         }
-
-
 
         private void CountImagesInFolder()
         {
@@ -143,10 +164,15 @@ namespace IFZConvertor
                 // Count .ifz files in the folder
                 int ifzFileCount = Directory.GetFiles(folderPath, "*.ifz", SearchOption.TopDirectoryOnly).Length;
 
-                txbImgsCount.Text = $".bmp: {bmpFileCount} \r\n.jpg .jpeg: {jpgFileCount + jpegFileCount}\r\n.png: {pngFileCount}\r\n.ifz: {ifzFileCount}";
+                int totalFileCount = bmpFileCount + jpgFileCount + jpegFileCount + pngFileCount + ifzFileCount;
 
-                // Display the count to the user
-                //MessageBox.Show($"Number of .bmp files: {bmpFileCount}", "File Count", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txbImgsCount.Text = $".bmp: {bmpFileCount} \r\n" +
+                    $".jpg .jpeg: {jpgFileCount + jpegFileCount}\r\n" +
+                    $".png: {pngFileCount}\r\n" +
+                    $".ifz: {ifzFileCount}\r\n" +
+                    $"--- --- ---" + "\r\n" +
+                    $"All: {totalFileCount}";
+
             }
             catch (Exception ex)
             {
@@ -160,51 +186,226 @@ namespace IFZConvertor
             CountImagesInFolder();
         }
 
-        private void ExecuteSave()
+        /// <summary>
+        /// Convert images from Image type (bmp jpg png) to .IFZ format.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnConvert_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog fd = new SaveFileDialog())
+            ConvertImagesToIFZ();
+        }
+
+        private void ConvertImagesToIFZ() {
+            string path = txbFolderSource.Text;
+
+            if (txbFolderSource.Text.Length < 3 || !Directory.Exists(txbFolderSource.Text))
             {
-                fd.Filter = "IFZ(*.ifz)|*.ifz";
-                if (fd.ShowDialog() == DialogResult.OK)
-                {
-                    try
+                MessageBox.Show("Please select correct folder path!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+                switch (cmbSelectExt.SelectedIndex)
+            {
+                case 0: // .bmp
                     {
-                        string fn = fd.FileName;
-                        using (FileStream fs = new FileStream(fn, FileMode.Create, FileAccess.Write, FileShare.None))
+                        string[] files = Directory.GetFiles(path, "*.bmp", SearchOption.TopDirectoryOnly);
+                        foreach (string file in files)
                         {
-                            using (BinaryWriter bw = new BinaryWriter(fs))
-                            {
-                                bw.Write(4294967294u);
-                                bw.Write(this.GetCameraConnectInfo());
-                                //this.WriteImageData(this.cameraImage0, bw);
-                                //this.WriteImageData(this.cameraImage1, bw);
-                                //this.WriteImageData(this.cameraImage2, bw);
-                                //this.WriteImageData(this.cameraImage3, bw);
-                                //this.WriteImageData(this.cameraImage4, bw);
-                                //this.WriteImageData(this.cameraImage5, bw);
-                                //this.WriteImageData(this.cameraImage6, bw);
-                                //this.WriteImageData(this.cameraImage7, bw);
-                                bw.Close();
-                                fs.Close();
-                            }
+                            MakeIFZ(file, ".bmp");
                         }
+
+                        MessageBox.Show("Converted images: " + files.Count().ToString(), "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        break;
                     }
-                    catch
+                case 1: // .jpg/.jpeg
                     {
-                        //MessageBox.Show(this.lang.GetText("saveError"));
+                        string[] files_jpg = Directory.GetFiles(path, "*.jpg", SearchOption.TopDirectoryOnly);
+                        string[] files_jpeg = Directory.GetFiles(path, "*.jpeg", SearchOption.TopDirectoryOnly);
+                        foreach (string file in files_jpg)
+                        {
+                            MakeIFZ(file, ".jpg");
+                        }
+                        foreach (string file in files_jpeg)
+                        {
+                            MakeIFZ(file, ".jpeg");
+                        }
+
+                        int totalJpg = files_jpg.Count() + files_jpeg.Count();
+                        MessageBox.Show("Converted images: " + totalJpg.ToString(), "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        break;
                     }
-                }
+                case 2: // .png
+                    {
+                        string[] files = Directory.GetFiles(path, "*.png", SearchOption.TopDirectoryOnly);
+                        foreach (string file in files)
+                        {
+                            MakeIFZ(file, ".png");
+                        }
+
+                        MessageBox.Show("Converted images: " + files.Count().ToString(), "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        break;
+                    }
+                case 3: // ALL: bmp + jpg + png
+                    {
+                        string[] files_bmp = Directory.GetFiles(path, "*.bmp", SearchOption.TopDirectoryOnly);
+                        string[] files_jpg = Directory.GetFiles(path, "*.jpg", SearchOption.TopDirectoryOnly);
+                        string[] files_jpeg = Directory.GetFiles(path, "*.jpeg", SearchOption.TopDirectoryOnly);
+                        string[] files_png = Directory.GetFiles(path, "*.png", SearchOption.TopDirectoryOnly);
+
+                        foreach (string file in files_bmp)
+                        {
+                            MakeIFZ(file, ".bmp");
+                        }
+                        foreach (string file in files_jpg)
+                        {
+                            MakeIFZ(file, ".jpg");
+                        }
+                        foreach (string file in files_jpeg)
+                        {
+                            MakeIFZ(file, ".jpeg");
+                        }
+                        foreach (string file in files_png)
+                        {
+                            MakeIFZ(file, ".png");
+                        }
+
+                        int totalNumber = files_bmp.Count() + files_jpg.Count() + files_jpeg.Count() + files_png.Count();
+                        MessageBox.Show("Converted images: " + totalNumber.ToString(), "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        break;
+                    }
+                default:
+                    {
+                        MessageBox.Show("Please select a valid extension to convert.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    }
+            }
+
+            //Update counters for images inside the Source folder
+            CountImagesInFolder();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void chbSameAsSourceFolder_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckDestinationPathSameAsSource();
+        }
+
+        private void SetAllControlsToDefault()
+        {
+            txbFolderSource.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            txbFolderDestination.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            chbSameAsSourceFolder.Checked = true;
+            CheckDestinationPathSameAsSource();
+
+            pnlImg2Ifz.SendToBack();
+            pnlImg2Ifz.Visible = false;
+
+            pnlSelectMainMode.BringToFront();
+            pnlSelectMainMode.Visible = true;
+
+            cmbSelectExt.SelectedIndex = 0; //select .bmp as Default extension
+        }
+
+        private void txbFolderSource_TextChanged(object sender, EventArgs e)
+        {
+            if (chbSameAsSourceFolder.Checked)
+            {
+                txbFolderDestination.Text = txbFolderSource.Text;
             }
         }
 
-        public static bool MakeIFZ(string filename)
+        #endregion
+
+        #region "Menu UI (top)"
+
+        // --- --- --- Menu -> File
+
+        /// <summary>
+        /// Set all fields and controls and panels to default values and states.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void defaultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            filename = filename.ToLower();
-            if (filename.IndexOf(".bmp") < 1)
+            SetAllControlsToDefault();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        // --- --- --- Menu -> Functions
+        private void tsmiSelectSourcePath_Click(object sender, EventArgs e)
+        {
+            SelectSourceFolder();
+        }
+
+        private void tsmiSelectDestinationPath_Click(object sender, EventArgs e)
+        {
+            SelectDestinationFolder();
+        }
+
+        #endregion
+
+        /// --- --- --- --- ---
+        #region "Image conversion and transformation"
+
+        /// <summary>
+        /// Change filename extension to .ifz
+        /// </summary>
+        /// <param name="filename">Full filename path</param>
+        /// <param name="extension">Filename extension as ".bmp" or ".png" etc</param>
+        private static string MakeNewFileNameIFZ(string filename, string extension)
+        {
+            string filenameLower = filename.ToLower();
+            int lastIndex = filenameLower.LastIndexOf(extension, StringComparison.Ordinal);
+
+            if (lastIndex < extension.Length || lastIndex >= filenameLower.Length)
             {
+                MessageBox.Show("File \r\n" + filename + "\r\n is not a " + extension + " image by extension!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+
+            //string fn = filename.Replace(".bmp", ".ifz");         //replace is BAD, because it could be a part of full path
+            //cut out ".bmp" (extension) part from ORIGINAL filename
+            string fn = filename.Substring(0, filenameLower.Length - extension.Length); 
+            fn += ".ifz";
+
+            return fn;
+        }
+
+        /// <summary>
+        /// Create ONE .IFZ file from ONE image file.
+        /// One to One.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="extension"></param>
+        /// <returns></returns>
+        public static bool MakeIFZ(string filename, string extension)
+        {
+            if (filename.Equals(string.Empty))
+            {
+                MessageBox.Show("Empty filename!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            string fn = filename.Replace(".bmp", ".ifz");
+            if (extension.Equals(string.Empty))
+            {
+                MessageBox.Show("Empty extension!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            string fn = MakeNewFileNameIFZ(filename, extension);
+
             using (new SaveFileDialog())
             {
                 using (FileStream fs = new FileStream(fn, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -222,162 +423,24 @@ namespace IFZConvertor
             return true;
         }
 
-        private bool WriteImageData(cameraimage camimg, BinaryWriter bw)
-        {
-            if (camimg.CameraEnable)
-            {
-                if (camimg.isMonochrome)
-                {
-                    bw.Write(10);
-                }
-                else
-                {
-                    bw.Write(103);
-                }
-                
-                bw.Write(camimg.CameraWidth);
-                bw.Write(camimg.CameraHeight);
-                bw.Write(Math.Max(0, camimg.ImageOffsetX));
-                bw.Write(Math.Max(0, camimg.ImageOffsetY));
-                bw.Write(camimg.ImageWidth);
-                bw.Write(camimg.ImageHeight);
-                bw.Write(camimg.ImageWidth * camimg.ImageHeight + 32);
+        /// <summary>
+        /// This approach assumes the replacement length matches the length of the substring being replaced. 
+        /// If not, you may need to adjust the Substring calls.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="replace"></param>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
+        static string ReplaceSubstringFromIndex(string input, string replace, int startIndex) { 
+            
+            string before = input.Substring(0, startIndex);
+            string after = input.Substring(startIndex + replace.Length);
 
-                using (Bitmap bmp = camimg.ImageData)
-                {
-                    int w = bmp.Width;
-                    int h = bmp.Height;
-                    BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-                    IntPtr pData = bmp_data.Scan0;
-                    int stride = bmp_data.Stride;
-                    int size = h * stride;
-                    int[] target = new int[]
-                    {
-                        1,
-                        2
-                    };
-                    byte[] rgbdata = new byte[size];
-                    Marshal.Copy(pData, rgbdata, 0, size);
-                    for (int y = 0; y < h; y++)
-                    {
-                        int pXofst = y * stride;
-                        if (y < 0)
-                        {
-                            pXofst = 0;
-                        }
-                        if (y == h)
-                        {
-                            pXofst = (h - 1) * stride;
-                        }
-                        if ((y + 1) % 2 == 0)
-                        {
-                            target[0] = 1;
-                            target[1] = 2;
-                        }
-                        else
-                        {
-                            target[0] = 0;
-                            target[1] = 1;
-                        }
-                        for (int x = 0; x < w; x++)
-                        {
-                            int pPix = pXofst + x * 3;
-                            bw.Write(rgbdata[pPix + target[x % 2]]);
-                        }
-                    }
-                    bmp.UnlockBits(bmp_data);
-                }
-            }
-            return true;
-        }
-
-        /*
-        private static bool WriteImageData_Original(string img_file, BinaryWriter bw)
-        {
-            bw.Write(10);
-            using (Bitmap bmp = new Bitmap(img_file))
-            {
-                bw.Write(bmp.Width);
-                bw.Write(bmp.Height);
-                bw.Write(0);
-                bw.Write(0);
-                bw.Write(bmp.Width);
-                bw.Write(bmp.Height);
-                bw.Write(bmp.Width * bmp.Height + 32);
-                int w = bmp.Width;
-                int h = bmp.Height;
-                BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-                IntPtr pData = bmp_data.Scan0;
-                int stride = bmp_data.Stride;
-                int size = h * stride;
-                int[] target = new int[]
-                {
-                    1,
-                    2
-                };
-                byte[] rgbdata = new byte[size];
-                Marshal.Copy(pData, rgbdata, 0, size);
-                for (int y = 0; y < h; y++)
-                {
-                    int pXofst = y * stride;
-                    if (y < 0)
-                    {
-                        pXofst = 0;
-                    }
-                    if (y == h)
-                    {
-                        pXofst = (h - 1) * stride;
-                    }
-                    if ((y + 1) % 2 == 0)
-                    {
-                        target[0] = 1;
-                        target[1] = 2;
-                    }
-                    else
-                    {
-                        target[0] = 0;
-                        target[1] = 1;
-                    }
-                    for (int x = 0; x < w; x++)
-                    {
-                        int pPix = pXofst + x * 3;
-                        bw.Write(rgbdata[pPix + target[x % 2]]);
-                    }
-                }
-                bmp.UnlockBits(bmp_data);
-            }
-            return true;
-        }
-        //*/
-
-
-        public static void ConvertPngToBmp(string sourceFilePath, string destinationFilePath)
-        {
-            try
-            {
-                // Ensure the source file exists
-                if (!File.Exists(sourceFilePath))
-                {
-                    throw new FileNotFoundException("Source file not found.", sourceFilePath);
-                }
-
-                // Load the .png file
-                using (Bitmap pngImage = new Bitmap(sourceFilePath))
-                {
-                    // Save the image as .bmp
-                    pngImage.Save(destinationFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
-                }
-
-                Console.WriteLine($"Successfully converted {sourceFilePath} to {destinationFilePath}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-            }
+            return before + replace + after;
         }
 
         /// <summary>
-        /// Write one image data as IFZ file to Camera0 slot
+        /// Write one image data Format24bppRgb as IFZ file to Camera0 slot.
         /// </summary>
         /// <param name="img_file"></param>
         /// <param name="bw"></param>
@@ -406,10 +469,10 @@ namespace IFZConvertor
 
                 int w = bmp.Width;
                 int h = bmp.Height;
-                
+
                 BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
                 IntPtr pData = bmp_data.Scan0;
-                
+
                 int stride = bmp_data.Stride;
                 int size = h * stride;
                 int[] target = new int[]
@@ -417,10 +480,10 @@ namespace IFZConvertor
                     1,
                     2
                 };
-                
+
                 byte[] rgbdata = new byte[size];
                 Marshal.Copy(pData, rgbdata, 0, size);
-                
+
                 for (int y = 0; y < h; y++)
                 {
                     int pXofst = y * stride;
@@ -452,53 +515,6 @@ namespace IFZConvertor
             }
             return true;
         }
-
-
-        private uint GetCameraConnectInfo()
-        {
-            uint caminfo = 0u;
-            //if (this.cameraImage7.CameraEnable)
-            //{
-            //    caminfo += 1u;
-            //}
-            //caminfo <<= 1;
-            //if (this.cameraImage6.CameraEnable)
-            //{
-            //    caminfo += 1u;
-            //}
-            //caminfo <<= 1;
-            //if (this.cameraImage5.CameraEnable)
-            //{
-            //    caminfo += 1u;
-            //}
-            //caminfo <<= 1;
-            //if (this.cameraImage4.CameraEnable)
-            //{
-            //    caminfo += 1u;
-            //}
-            //caminfo <<= 1;
-            //if (this.cameraImage3.CameraEnable)
-            //{
-            //    caminfo += 1u;
-            //}
-            //caminfo <<= 1;
-            //if (this.cameraImage2.CameraEnable)
-            //{
-            //    caminfo += 1u;
-            //}
-            //caminfo <<= 1;
-            //if (this.cameraImage1.CameraEnable)
-            //{
-            //    caminfo += 1u;
-            //}
-            //caminfo <<= 1;
-            //if (this.cameraImage0.CameraEnable)
-            //{
-            //    caminfo += 1u;
-            //}
-            return caminfo;
-        }
-
 
         public static bool IsMonochromeOptimized(Bitmap bmp)
         {
@@ -538,55 +554,44 @@ namespace IFZConvertor
             return true; // All pixels are monochrome
         }
 
-        private void btnConvert_Click(object sender, EventArgs e)
+        public static void ConvertPngToBmp(string sourceFilePath, string destinationFilePath)
         {
-            string path = txbFolderSource.Text;
-
-            switch (cmbSelectExt.SelectedIndex)
+            try
             {
-                case 0: // .bmp
-                    {
-                        string[] files = Directory.GetFiles(path, "*.bmp", SearchOption.TopDirectoryOnly);
-                        foreach (string file in files)
-                        {
-                            MakeIFZ(file);
-                        }
-                        break;
-                    }
-                case 1: // .jpg/.jpeg
-                    {
-                        string[] files_jpg = Directory.GetFiles(path, "*.jpg", SearchOption.TopDirectoryOnly);
-                        string[] files_jpeg = Directory.GetFiles(path, "*.jpeg", SearchOption.TopDirectoryOnly);
-                        foreach (string file in files_jpg)
-                        {
-                            MakeIFZ(file);
-                        }
-                        foreach (string file in files_jpeg)
-                        {
-                            MakeIFZ(file);
-                        }
-                        break;
-                    }
-                case 2: // .png
-                    {
-                        string[] files = Directory.GetFiles(path, "*.png", SearchOption.TopDirectoryOnly);
-                        foreach (string file in files)
-                        {
-                            MakeIFZ(file);
-                        }
-                        break;
-                    }
-                default:
-                    {
-                        MessageBox.Show("Please select a valid extension to convert.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    }
+                // Ensure the source file exists
+                if (!File.Exists(sourceFilePath))
+                {
+                    throw new FileNotFoundException("Source file not found.", sourceFilePath);
+                }
+
+                // Load the .png file
+                using (Bitmap pngImage = new Bitmap(sourceFilePath))
+                {
+                    // Save the image as .bmp
+                    pngImage.Save(destinationFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
+                }
+
+                Console.WriteLine($"Successfully converted {sourceFilePath} to {destinationFilePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+
+        #endregion
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            VersionYP versionForm = new VersionYP();
+            versionForm.TopMost = true;
+            versionForm.ShowDialog();
+        }
+
+        private void tsmiImg2Ifz_Click(object sender, EventArgs e)
+        {
+            SelectImg2IfzMode();
         }
     }
 }
