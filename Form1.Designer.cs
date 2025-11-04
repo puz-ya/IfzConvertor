@@ -40,6 +40,9 @@
             this.lblFolderDestination = new System.Windows.Forms.Label();
             this.btnSelectSource = new System.Windows.Forms.Button();
             this.pnlImg2Ifz = new System.Windows.Forms.Panel();
+            this.chbAddExtToName = new System.Windows.Forms.CheckBox();
+            this.lblAddExtToName = new System.Windows.Forms.Label();
+            this.btnLabelImg2Ifa = new System.Windows.Forms.Button();
             this.lblFilesCounters = new System.Windows.Forms.Label();
             this.btnConvert = new System.Windows.Forms.Button();
             this.btnRefreshImgCount = new System.Windows.Forms.Button();
@@ -52,15 +55,12 @@
             this.defaultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.functionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmiSelectSourcePath = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsmiSelectDestinationPath = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiIfz2Img = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiImg2Ifz = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnLabelImg2Ifa = new System.Windows.Forms.Button();
-            this.lblAddExtToName = new System.Windows.Forms.Label();
-            this.chbAddExtToName = new System.Windows.Forms.CheckBox();
+            this.tsmiSelectSourcePath = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiSelectDestinationPath = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlSelectMainMode.SuspendLayout();
             this.pnlImg2Ifz.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -185,13 +185,43 @@
             this.pnlImg2Ifz.Size = new System.Drawing.Size(663, 366);
             this.pnlImg2Ifz.TabIndex = 8;
             // 
+            // chbAddExtToName
+            // 
+            this.chbAddExtToName.AutoSize = true;
+            this.chbAddExtToName.Location = new System.Drawing.Point(174, 191);
+            this.chbAddExtToName.Name = "chbAddExtToName";
+            this.chbAddExtToName.Size = new System.Drawing.Size(265, 17);
+            this.chbAddExtToName.TabIndex = 16;
+            this.chbAddExtToName.Text = "Add (01.jpg -> 01.jpg.ifz, 01.jpeg -> 01.jpeg.ifz, etc)";
+            this.chbAddExtToName.UseVisualStyleBackColor = true;
+            this.chbAddExtToName.CheckedChanged += new System.EventHandler(this.chbAddExtToName_CheckedChanged);
+            // 
+            // lblAddExtToName
+            // 
+            this.lblAddExtToName.Location = new System.Drawing.Point(21, 192);
+            this.lblAddExtToName.Name = "lblAddExtToName";
+            this.lblAddExtToName.Size = new System.Drawing.Size(142, 23);
+            this.lblAddExtToName.TabIndex = 15;
+            this.lblAddExtToName.Text = "Add ext to end of the name?";
+            // 
+            // btnLabelImg2Ifa
+            // 
+            this.btnLabelImg2Ifa.BackColor = System.Drawing.SystemColors.Control;
+            this.btnLabelImg2Ifa.Enabled = false;
+            this.btnLabelImg2Ifa.Location = new System.Drawing.Point(496, 88);
+            this.btnLabelImg2Ifa.Name = "btnLabelImg2Ifa";
+            this.btnLabelImg2Ifa.Size = new System.Drawing.Size(138, 120);
+            this.btnLabelImg2Ifa.TabIndex = 14;
+            this.btnLabelImg2Ifa.Text = "IMG ---> IFZ";
+            this.btnLabelImg2Ifa.UseVisualStyleBackColor = false;
+            // 
             // lblFilesCounters
             // 
             this.lblFilesCounters.Location = new System.Drawing.Point(17, 76);
             this.lblFilesCounters.Name = "lblFilesCounters";
             this.lblFilesCounters.Size = new System.Drawing.Size(135, 23);
             this.lblFilesCounters.TabIndex = 13;
-            this.lblFilesCounters.Text = "Files by types:";
+            this.lblFilesCounters.Text = "Files by types at Source:";
             // 
             // btnConvert
             // 
@@ -207,7 +237,7 @@
             // 
             this.btnRefreshImgCount.Location = new System.Drawing.Point(313, 73);
             this.btnRefreshImgCount.Name = "btnRefreshImgCount";
-            this.btnRefreshImgCount.Size = new System.Drawing.Size(92, 85);
+            this.btnRefreshImgCount.Size = new System.Drawing.Size(92, 80);
             this.btnRefreshImgCount.TabIndex = 11;
             this.btnRefreshImgCount.Text = "Refresh";
             this.btnRefreshImgCount.UseVisualStyleBackColor = true;
@@ -219,9 +249,9 @@
             this.txbImgsCount.Multiline = true;
             this.txbImgsCount.Name = "txbImgsCount";
             this.txbImgsCount.ReadOnly = true;
-            this.txbImgsCount.Size = new System.Drawing.Size(138, 85);
+            this.txbImgsCount.Size = new System.Drawing.Size(138, 80);
             this.txbImgsCount.TabIndex = 10;
-            this.txbImgsCount.Text = ".bmp: 0\r\n.jpg / .jpeg: 0\r\n.png: 0\r\n.ifz: 0\r\n--- --- ---\r\nAll: 0";
+            this.txbImgsCount.Text = ".bmp: 0\r\n.jpg / .jpeg: 0\r\n.png: 0\r\n--- --- ---\r\nAll: 0";
             // 
             // btnBack
             // 
@@ -235,7 +265,7 @@
             // 
             // lblSelectExt
             // 
-            this.lblSelectExt.Location = new System.Drawing.Point(17, 172);
+            this.lblSelectExt.Location = new System.Drawing.Point(21, 162);
             this.lblSelectExt.Name = "lblSelectExt";
             this.lblSelectExt.Size = new System.Drawing.Size(142, 23);
             this.lblSelectExt.TabIndex = 1;
@@ -250,7 +280,7 @@
             ".jpg / .jpeg",
             ".png",
             "All"});
-            this.cmbSelectExt.Location = new System.Drawing.Point(169, 169);
+            this.cmbSelectExt.Location = new System.Drawing.Point(169, 159);
             this.cmbSelectExt.Name = "cmbSelectExt";
             this.cmbSelectExt.Size = new System.Drawing.Size(236, 21);
             this.cmbSelectExt.TabIndex = 0;
@@ -280,14 +310,14 @@
             // defaultsToolStripMenuItem
             // 
             this.defaultsToolStripMenuItem.Name = "defaultsToolStripMenuItem";
-            this.defaultsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.defaultsToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
             this.defaultsToolStripMenuItem.Text = "Reset";
             this.defaultsToolStripMenuItem.Click += new System.EventHandler(this.defaultsToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -303,20 +333,6 @@
             this.functionsToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
             this.functionsToolStripMenuItem.Text = "Functions";
             // 
-            // tsmiSelectSourcePath
-            // 
-            this.tsmiSelectSourcePath.Name = "tsmiSelectSourcePath";
-            this.tsmiSelectSourcePath.Size = new System.Drawing.Size(195, 22);
-            this.tsmiSelectSourcePath.Text = "Select Source path";
-            this.tsmiSelectSourcePath.Click += new System.EventHandler(this.tsmiSelectSourcePath_Click);
-            // 
-            // tsmiSelectDestinationPath
-            // 
-            this.tsmiSelectDestinationPath.Name = "tsmiSelectDestinationPath";
-            this.tsmiSelectDestinationPath.Size = new System.Drawing.Size(195, 22);
-            this.tsmiSelectDestinationPath.Text = "Select Destination path";
-            this.tsmiSelectDestinationPath.Click += new System.EventHandler(this.tsmiSelectDestinationPath_Click);
-            // 
             // tsmiIfz2Img
             // 
             this.tsmiIfz2Img.Enabled = false;
@@ -331,47 +347,31 @@
             this.tsmiImg2Ifz.Text = "IMG -> IFZ";
             this.tsmiImg2Ifz.Click += new System.EventHandler(this.tsmiImg2Ifz_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(192, 6);
+            // 
+            // tsmiSelectSourcePath
+            // 
+            this.tsmiSelectSourcePath.Name = "tsmiSelectSourcePath";
+            this.tsmiSelectSourcePath.Size = new System.Drawing.Size(195, 22);
+            this.tsmiSelectSourcePath.Text = "Select Source path";
+            this.tsmiSelectSourcePath.Click += new System.EventHandler(this.tsmiSelectSourcePath_Click);
+            // 
+            // tsmiSelectDestinationPath
+            // 
+            this.tsmiSelectDestinationPath.Name = "tsmiSelectDestinationPath";
+            this.tsmiSelectDestinationPath.Size = new System.Drawing.Size(195, 22);
+            this.tsmiSelectDestinationPath.Text = "Select Destination path";
+            this.tsmiSelectDestinationPath.Click += new System.EventHandler(this.tsmiSelectDestinationPath_Click);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(192, 6);
-            // 
-            // btnLabelImg2Ifa
-            // 
-            this.btnLabelImg2Ifa.BackColor = System.Drawing.SystemColors.Control;
-            this.btnLabelImg2Ifa.Enabled = false;
-            this.btnLabelImg2Ifa.Location = new System.Drawing.Point(496, 88);
-            this.btnLabelImg2Ifa.Name = "btnLabelImg2Ifa";
-            this.btnLabelImg2Ifa.Size = new System.Drawing.Size(138, 120);
-            this.btnLabelImg2Ifa.TabIndex = 14;
-            this.btnLabelImg2Ifa.Text = "IMG ---> IFZ";
-            this.btnLabelImg2Ifa.UseVisualStyleBackColor = false;
-            // 
-            // lblAddExtToName
-            // 
-            this.lblAddExtToName.Location = new System.Drawing.Point(17, 197);
-            this.lblAddExtToName.Name = "lblAddExtToName";
-            this.lblAddExtToName.Size = new System.Drawing.Size(142, 23);
-            this.lblAddExtToName.TabIndex = 15;
-            this.lblAddExtToName.Text = "Add ext to end of the name?";
-            // 
-            // chbAddExtToName
-            // 
-            this.chbAddExtToName.AutoSize = true;
-            this.chbAddExtToName.Location = new System.Drawing.Point(174, 196);
-            this.chbAddExtToName.Name = "chbAddExtToName";
-            this.chbAddExtToName.Size = new System.Drawing.Size(265, 17);
-            this.chbAddExtToName.TabIndex = 16;
-            this.chbAddExtToName.Text = "Add (01.jpg -> 01.jpg.ifz, 01.jpeg -> 01.jpeg.ifz, etc)";
-            this.chbAddExtToName.UseVisualStyleBackColor = true;
-            this.chbAddExtToName.CheckedChanged += new System.EventHandler(this.chbAddExtToName_CheckedChanged);
             // 
             // Form1
             // 
