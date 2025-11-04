@@ -11,6 +11,10 @@ namespace IFZConvertor
 {
     public partial class Form1 : Form
     {
+
+        private bool _addExtensionToName = false;    //checkbox
+        private bool _sameAsSource = true;           //checkbox
+
         public Form1()
         {
             InitializeComponent();
@@ -31,11 +35,15 @@ namespace IFZConvertor
                 txbFolderDestination.Enabled = false;
                 btnSelectDestination.Enabled = false;
                 txbFolderDestination.Text = txbFolderSource.Text;
+
+                _sameAsSource = true;
             }
             else
             {
                 txbFolderDestination.Enabled = true;
                 btnSelectDestination.Enabled = true;
+
+                _sameAsSource = false;
             }
 
         }
@@ -212,7 +220,7 @@ namespace IFZConvertor
                         string[] files = Directory.GetFiles(path, "*.bmp", SearchOption.TopDirectoryOnly);
                         foreach (string file in files)
                         {
-                            MakeIFZ(file, ".bmp");
+                            MakeIFZ(file, ".bmp", _addExtensionToName);
                         }
 
                         MessageBox.Show("Converted images: " + files.Count().ToString(), "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -225,11 +233,11 @@ namespace IFZConvertor
                         string[] files_jpeg = Directory.GetFiles(path, "*.jpeg", SearchOption.TopDirectoryOnly);
                         foreach (string file in files_jpg)
                         {
-                            MakeIFZ(file, ".jpg");
+                            MakeIFZ(file, ".jpg", _addExtensionToName);
                         }
                         foreach (string file in files_jpeg)
                         {
-                            MakeIFZ(file, ".jpeg");
+                            MakeIFZ(file, ".jpeg", _addExtensionToName);
                         }
 
                         int totalJpg = files_jpg.Count() + files_jpeg.Count();
@@ -242,7 +250,7 @@ namespace IFZConvertor
                         string[] files = Directory.GetFiles(path, "*.png", SearchOption.TopDirectoryOnly);
                         foreach (string file in files)
                         {
-                            MakeIFZ(file, ".png");
+                            MakeIFZ(file, ".png", _addExtensionToName);
                         }
 
                         MessageBox.Show("Converted images: " + files.Count().ToString(), "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -258,19 +266,19 @@ namespace IFZConvertor
 
                         foreach (string file in files_bmp)
                         {
-                            MakeIFZ(file, ".bmp");
+                            MakeIFZ(file, ".bmp", _addExtensionToName);
                         }
                         foreach (string file in files_jpg)
                         {
-                            MakeIFZ(file, ".jpg");
+                            MakeIFZ(file, ".jpg", _addExtensionToName);
                         }
                         foreach (string file in files_jpeg)
                         {
-                            MakeIFZ(file, ".jpeg");
+                            MakeIFZ(file, ".jpeg", _addExtensionToName);
                         }
                         foreach (string file in files_png)
                         {
-                            MakeIFZ(file, ".png");
+                            MakeIFZ(file, ".png", _addExtensionToName);
                         }
 
                         int totalNumber = files_bmp.Count() + files_jpg.Count() + files_jpeg.Count() + files_png.Count();
@@ -301,8 +309,12 @@ namespace IFZConvertor
 
         private void SetAllControlsToDefault()
         {
+            _sameAsSource = true;
+            _addExtensionToName = false;
+
             txbFolderSource.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             txbFolderDestination.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            chbSameAsSourceFolder.Enabled = true;
             chbSameAsSourceFolder.Checked = true;
             CheckDestinationPathSameAsSource();
 
@@ -313,6 +325,9 @@ namespace IFZConvertor
             pnlSelectMainMode.Visible = true;
 
             cmbSelectExt.SelectedIndex = 0; //select .bmp as Default extension
+
+            chbAddExtToName.Enabled = true;
+            chbAddExtToName.Checked = false;    //until we select from combobox no point in checking this
         }
 
         private void txbFolderSource_TextChanged(object sender, EventArgs e)
@@ -378,11 +393,42 @@ namespace IFZConvertor
 
             //string fn = filename.Replace(".bmp", ".ifz");         //replace is BAD, because it could be a part of full path
             //cut out ".bmp" (extension) part from ORIGINAL filename
+            //in this version of Function we don't add original extension of the file to the end of file name
             string fn = filename.Substring(0, filenameLower.Length - extension.Length); 
             fn += ".ifz";
 
             return fn;
         }
+
+        /// <summary>
+        /// Change filename extension to .ifz
+        /// </summary>
+        /// <param name="filename">Full filename path</param>
+        /// <param name="extension">Filename extension as ".bmp" or ".png" etc</param>
+        private static string MakeNewFileNameIFZ(string filename, string extension, bool addExtensionToFilename)
+        {
+            string filenameLower = filename.ToLower();
+            int lastIndex = filenameLower.LastIndexOf(extension, StringComparison.Ordinal);
+
+            if (lastIndex < extension.Length || lastIndex >= filenameLower.Length)
+            {
+                MessageBox.Show("File \r\n" + filename + "\r\n is not a " + extension + " image by extension!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+
+            //string fn = filename.Replace(".bmp", ".ifz");         //replace is BAD, because it could be a part of full path
+            //cut out ".bmp" (extension) part from ORIGINAL filename
+            //in this version of Function we don't add original extension of the file to the end of file name
+            string fn = filename.Substring(0, filenameLower.Length - extension.Length);
+            if (addExtensionToFilename)
+            {
+                fn += extension;
+            }
+            fn += ".ifz";
+
+            return fn;
+        }
+
 
         /// <summary>
         /// Create ONE .IFZ file from ONE image file.
@@ -422,6 +468,46 @@ namespace IFZConvertor
             }
             return true;
         }
+
+        /// <summary>
+        /// Create ONE .IFZ file from ONE image file.
+        /// One to One.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="extension"></param>
+        /// <returns></returns>
+        public static bool MakeIFZ(string filename, string extension, bool addExtensionToFilename)
+        {
+            if (filename.Equals(string.Empty))
+            {
+                MessageBox.Show("Empty filename!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (extension.Equals(string.Empty))
+            {
+                MessageBox.Show("Empty extension!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            string fn = MakeNewFileNameIFZ(filename, extension, addExtensionToFilename);
+
+            using (new SaveFileDialog())
+            {
+                using (FileStream fs = new FileStream(fn, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    using (BinaryWriter bw = new BinaryWriter(fs))
+                    {
+                        bw.Write(4294967294u);
+                        bw.Write(1);
+                        WriteImageData(filename, bw);
+                        bw.Close();
+                        fs.Close();
+                    }
+                }
+            }
+            return true;
+        }
+
 
         /// <summary>
         /// This approach assumes the replacement length matches the length of the substring being replaced. 
@@ -554,6 +640,7 @@ namespace IFZConvertor
             return true; // All pixels are monochrome
         }
 
+        /*
         public static void ConvertPngToBmp(string sourceFilePath, string destinationFilePath)
         {
             try
@@ -578,6 +665,7 @@ namespace IFZConvertor
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
+        //*/
 
 
         #endregion
@@ -592,6 +680,33 @@ namespace IFZConvertor
         private void tsmiImg2Ifz_Click(object sender, EventArgs e)
         {
             SelectImg2IfzMode();
+        }
+
+        private void cmbSelectExt_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // for .jpg / .jpeg and ALL extensions we check the "Add extension to filename" checkbox by default
+            if (cmbSelectExt.SelectedIndex == 1 || cmbSelectExt.SelectedIndex == 3)
+            {
+                chbAddExtToName.Checked = true;
+                _addExtensionToName = true;
+            }
+            else
+            {
+                chbAddExtToName.Checked = false;
+                _addExtensionToName = false;
+            }
+        }
+
+        private void chbAddExtToName_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chbAddExtToName.Checked)
+            {
+                _addExtensionToName = true;
+            }
+            else
+            {
+                _addExtensionToName = false;
+            }
         }
     }
 }
