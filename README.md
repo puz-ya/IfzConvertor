@@ -4,6 +4,12 @@ Created to allow easiest conversion between .ifz and the most used image formats
 IFZ type can be described as an archive with up to 8 images inside (max number of cameras per one FH vision controller).
 There could be more, but we will not dive into that.
 
+## Requirements
+
+OS: Windows only
+
+Target framework: .NET Framework 4.8
+
 ## Modes
 ![2025-11-03_17-49-00](https://github.com/user-attachments/assets/4348ab47-2849-4adb-873a-eef633c9d187)
 
