@@ -18,8 +18,8 @@ Target framework: .NET Framework 4.8
 TBD
 
 ### Img2Ifz (IMG ---> IFZ)
-![2025-11-04_14-38-40](https://github.com/user-attachments/assets/16a8a526-072b-435e-93b6-1ba0b1594e4f)
 
+![2025-11-04_14-38-40 - Copy](https://github.com/user-attachments/assets/e903d5ad-68af-42a6-bf64-a1793f3a3f16)
 
 Conversion is taken place inside specified (source) folder by default.
 User can specify Destination folder by unchecking "Same as Source folder" checkbox.
