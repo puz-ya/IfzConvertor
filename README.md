@@ -34,5 +34,6 @@ Example:
 
 ## About
 
-Version: 1.3 (IMG ---> IFZ only)
-Date: 2025.11
+Version: 1.3 (IMG ---> IFZ only).
+
+Date: 2025.11.
