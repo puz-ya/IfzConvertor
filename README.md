@@ -12,11 +12,27 @@ There could be more, but we will not dive into that.
 TBD
 
 ### Img2Ifz (IMG ---> IFZ)
-![2025-11-03_17-49-09](https://github.com/user-attachments/assets/5b3a758c-3bd1-42c8-abfe-9bde21a4fc04)
+![2025-11-04_14-38-40](https://github.com/user-attachments/assets/16a8a526-072b-435e-93b6-1ba0b1594e4f)
 
-Conversion is taken place inside specified (source) folder. 
-- Select source folder.
-- Check how many images each type are there.
-- Select extension type.
-- Attention: All images with the same name (but different extensions) Will Be Rewritten!
+
+Conversion is taken place inside specified (source) folder by default.
+User can specify Destination folder by unchecking "Same as Source folder" checkbox.
+
+- Select Source folder;
+- Check how many images each type are there;
+- Select extension type (.bmp, .jpg/.jpeg, .png, ALL) from dropdown;
+- Specify if you want to add original extension to the end of the filename by checkbox;
+
+**Attention:** If this setting is disabled, all images with the same name (but different extensions) Will Be Overwritten!
+
+Example: 
+
+![2025-11-04_12-55-29](https://github.com/user-attachments/assets/02628661-7270-457a-a4af-dcc5000b188a)
+
+- Specify Destination folder if needed.
 - Click Convert.
+
+## About
+
+Version: 1.3 (IMG ---> IFZ only)
+Date: 2025.11
